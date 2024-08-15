@@ -1,6 +1,6 @@
 # De-novo assembly of a Wolbachia genome
 
-This document contains instructions for generating a de-novo assembly of a wolbachia genome for BMEB bootcamp 2023. This is part 1 of the computational portion of the bootcamp.
+This document contains instructions for generating a de-novo assembly of a wolbachia genome for BMEB bootcamp 2024. This is part 1 of the computational portion of the bootcamp.
 
 I recommend that you clone this repository to your local computer, and open up this document in a text editor. That way you can save any changes you make to the code in this tutorial (like file paths)
 
@@ -18,23 +18,36 @@ ssh <your_cruzid>@hb.ucsc.edu
 You should be in your home directory. You can check the directory you are in by typing `pwd`. This stands for "print working directory" Mine looks like this:
 
 ```
-[mmastora@hb ~]$ pwd
-/hb/home/mmastora
+[aanakamo@hb ~]$ pwd
+/hb/home/aanakamo
 ```
 
 Create a new folder in your home directory for this analysis. Its good practice to keep your directories well organized.
 
 ```
-mkdir bootcamp2023
+mkdir bootcamp2024
 ```
 
 Change into this new directory for the rest of the analysis
 ```
-cd bootcamp2023
+cd bootcamp2024
 ```
 
 > Note: If you are new to linux commands, please refer to the [provided reference slides](https://docs.google.com/presentation/d/1hjIfozfQkjL4gj1eUtvBqgzpWERAkF8Uw43ToAQSxa8/edit#slide=id.p)
 
+## 0.5 Start an interactive slurm job
+
+Before running more computationally intensive commands, you want to reserve space on a node (for cluster etiquette). This ensures that we don't back up the hummingbird login node, which could otherwise become slow for other users if everyone runs stuff there. We could do this by submitting a job to slurm, or by starting an interactive job. Here we will start an interactive job, so that you can see what's happening and test things out.
+
+Start an interactive job (that will last for 3 hours) by running:
+```
+srun -N 1 -n 1 -p 128x24 -t 03:00:00 --pty bash
+```
+If you want, you could see what all the options mean by running `srun -h`. 
+
+Once the interactive job starts, you should see the host in the terminal prompt change from the login node (`aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-07`). Please try to remember to start interactive jobs (or submit a job to slurm) whenever you're downloading files, installing/running tools, etc!
+
+Once you are done running things, you can end the interactive job by running `exit`, which will end the job and return you to the login node. Or, the job will end once it reaches the time limit, but try to remember to exit when you're done.
 
 ## 1. Download fastq files produced by the Guppy basecaller
 
@@ -97,7 +110,7 @@ conda activate flye_29
 ```
 You'll know you have activated the environment if `(flye_29)` is at the beginning of your command prompt, like this
 ```
-(flye_29) [mmastora@hb progs]$
+(flye_29) [aanakamo@hb progs]$
 ```
 You can test that flye works by running:
 ```
@@ -134,7 +147,7 @@ The Flye [manual](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) g
 > Note: Flye took me 43 minutes to run on 1 thread. Hummingbird has 48 threads available. Lets keep everyone to 1 thread `-t 1` so we don't completely take over hummingbird. I'd reccommend running this in a screen.
 
 ```
-# move back to your bootcamp2023 directory
+# move back to your bootcamp2024 directory
 cd ../
 
 # create output directory for flye
@@ -144,12 +157,12 @@ mkdir flye
 conda activate flye_29
 
 # run flye assembler
-time flye --nano-hq /hb/home/mmastora/bootcamp2023/Wwil_fastq/merged.rmdup.fastq.gz -t 1 --out-dir /hb/home/mmastora/bootcamp2023/flye/
+time flye --nano-hq /hb/home/aanakamo/bootcamp2024/Wwil_fastq/merged.rmdup.fastq.gz -t 1 --out-dir /hb/home/aanakamo/bootcamp2024/flye/
 ```
 
 Take a look at the output of Flye. You should see the following files in your directory
 ```
-[mmastora@hb flye]$ ls
+[aanakamo@hb flye]$ ls
 00-assembly   30-contigger    assembly_graph.gfa  flye.log
 10-consensus  40-polishing    assembly_graph.gv   params.json
 20-repeat     assembly.fasta  assembly_info.txt
@@ -174,7 +187,7 @@ Running Quast:
 conda activate quast
 mkdir quast
 
-time quast /hb/home/mmastora/bootcamp2023/flye/assembly.fasta --nanopore /hb/home/mmastora/bootcamp2023/Wwil_fastq/merged.rmdup.fastq.gz -t 1 -o /hb/home/mmastora/bootcamp2023/quast --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 1200000
+time quast /hb/home/aanakamo/bootcamp2024/flye/assembly.fasta --nanopore /hb/home/aanakamo/bootcamp2024/Wwil_fastq/merged.rmdup.fastq.gz -t 1 -o /hb/home/aanakamo/bootcamp2024/quast --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 1200000
 ```
 > Quast took me 8 minutes to run on 1 thread.
 
@@ -186,7 +199,7 @@ Take some time to research the metrics and figures that QUAST produces, and disc
 I would reccommend downloading the quast output to your personal computer, so you can open all the figures it produces. To do this, open a new terminal window (on your personal computer, NOT on hummingbird) and run the following command (changing my username to yours)
 
 ```
-scp -r mmastora@hb.ucsc.edu:/hb/home/mmastora/bootcamp2023/quast/ .
+scp -r aanakamo@hb.ucsc.edu:/hb/home/aanakamo/bootcamp2024/quast/ .
 ```
 
 What do the metrics and plots output by Quast tell us about the quality and completeness of our assembly? Do we have enough information to say whether our assembly is "good"?
