@@ -5,9 +5,9 @@ Tutorial modeled on [this Plos tutorial](https://journals.plos.org/ploscompbiol/
 ## 0. Log in to Github 
 Ensure that you have a valid account and that you know your username and the name that you have associated with the account.
 
-Once you have done that please add your github username to this [google sheet](https://docs.google.com/spreadsheets/d/1IICoX3bIKXpZ8lqVnLEcaWMxRTKf-he1C1VGnH7Rpp4/edit?usp=sharing) so that I can add you to our collaborative repository for step 6. 
+Once you have done that please add your github username to this [google sheet](https://docs.google.com/spreadsheets/d/10owa-oHA4ZfK04q5nd7w324Me86VPSEAjPPgO9GTgKU/edit?usp=sharing) so that I can add you to our collaborative repository for step 6. 
 
-## 1. Log in to [google cloud console](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwjwju2Gkq2BAxX3NEQIHWNABa8QFnoECAcQAQ&url=https%3A%2F%2Fconsole.cloud.google.com%2F&usg=AOvVaw1GxwHR1WZnDu0xsR-djCrv&opi=89978449)
+## 1. Log in to [google cloud console](https://console.cloud.google.com/)
 
 In the upper right corner there is a small box with ">_" click on that and activate the cloud shell.
 
@@ -117,11 +117,12 @@ git commit -m "Message about commit"
 git push 
 ```
 
-Now that we have created a new file we can do the same process of adding, committing, and pushing it 
+Now that we have created a new file we can do the same process of adding, committing, and pushing it. You can check that state of your working directory with `git status`, which will show that your local repo is 1 commit ahead of your github repo.
 
 ```
 git add Bashtricks.md
 git commit -m "Adding bash tricks file"
+git status
 git push
 ```
 
@@ -132,13 +133,13 @@ Once again if you check the web interface you should see the updated repository 
 
 So far you've created and made changes in your own personal repository. This is great to be familiar with for keeping your own files in order, but is not the only use for version control. One of the most powerful use cases for git is when you have many people working on a project who all are contributing to a code base. This is where things can get tricky, as you want to be able to make changes without messing up code that someone else is working on. [Here](https://www.w3docs.com/snippets/git/how-to-create-a-remote-branch-in-git.html) is more information on creating a remote branch. 
 
-We are going to be working on this repository https://github.com/hloucks/BootcampGitTutorial where we will clone the repo, create a new branch, then push our changes on the new branch. 
+We are going to be working on this repository https://github.com/shanksc/BootcampGitTutorial where we will clone the repo, create a new branch, then push our changes on the new branch. 
 
 Before you can push to this repo you will need to accept my invitation to join the repo. Check your notifications on github and accept the invitation to edit the BootcampGitTutorial repo.
 
 ```
 cd
-gh repo clone hloucks/BootcampGitTutorial
+gh repo clone shanksc/BootcampGitTutorial
 cd BootcampGitTutorial
 
 
