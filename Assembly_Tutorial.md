@@ -35,7 +35,7 @@ cd bootcamp2024
 
 > Note: If you are new to linux commands, please refer to the [provided reference slides](https://docs.google.com/presentation/d/1hjIfozfQkjL4gj1eUtvBqgzpWERAkF8Uw43ToAQSxa8/edit#slide=id.p)
 
-## 0.5 Start an interactive slurm job
+## 0.5. Start an interactive slurm job
 
 Before running more computationally intensive commands, you want to reserve space on a node (for cluster etiquette). This ensures that we don't back up the hummingbird login node, which could otherwise become slow for other users if everyone runs stuff there. We could do this by submitting a job to slurm, or by starting an interactive job. Here we will start an interactive job, so that you can see what's happening and test things out.
 
@@ -47,39 +47,36 @@ If you want, you could see what all the options mean by running `srun -h`.
 
 Once the interactive job starts, you should see the host in the terminal prompt change from the login node (`aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-07`). Please try to remember to start interactive jobs (or submit a job to slurm) whenever you're downloading files, installing/running tools, etc!
 
-Once you are done running things, you can end the interactive job by running `exit`, which will end the job and return you to the login node. Or, the job will end once it reaches the time limit, but try to remember to exit when you're done.
+Once you are done running things, you can end the interactive job by running `exit`, which will end the job and return you to the login node. Or, the job will end once it reaches the time limit, but try to remember to exit when you're done. But, leave it running now as you move onto the next step.
 
 ## 1. Download fastq files produced by the Guppy basecaller
 
 The fastq files that were generated from the nanopore library you created are [located here](). The fastq files from our preliminary nanopore experiments are [located in this dropbox folder](https://www.dropbox.com/scl/fo/7cdhhpvc0vwxaawr36iff/h?rlkey=2o6mokx3yf5kkb3upymjab5yr&dl=0). 
 
-The fastq files are in this file: `Wwil_fastq.tar.gz`
+The fastq files are in this file called: `Wwil_fastq.tar.gz`
 
-Copy the link to this file from the dropbox website.
+Here is the link to this file in dropbox: `https://www.dropbox.com/scl/fi/o1e00wivre76rv004036w/Wwil_fastq.tar.gz?rlkey=urd8unwxfjev31qf721ed65s3&dl=0`
 
-To get the correct link, you need to select the box next to the file, click on the three dots icon at the top, then click on "Copy link"
-
-![dropbox_link](pics/dropbox_link.png)
-
-To download the files to hummingbird, go back to your terminal and type `wget -O Wwil_fastq.tar.gz` then add a space and paste the link from dropbox. The command should look like this:
+To download the files to hummingbird, go back to your terminal and type `wget -O Wwil_fastq.tar.gz` then add a space and paste the link above. The command should look like this:
 
 ```
 wget -O Wwil_fastq.tar.gz <[link from dropbox]>
 
-# example
+# Run this:
 wget -O Wwil_fastq.tar.gz https://www.dropbox.com/scl/fi/o1e00wivre76rv004036w/Wwil_fastq.tar.gz?rlkey=urd8unwxfjev31qf721ed65s3&dl=0
 ```
-To upload files from your local machine, first download the files from Dropbox, open a new terminal session (not logged in to hummingbird) and then use the following command to copy files over to hummingbird. 
+
+Alternatively, to upload files from your local machine, first download the files from Dropbox, open a new terminal session (not logged in to hummingbird) and then use the following command to copy files over to hummingbird. 
 
 ```
 scp /path/to/file  <your_cruzid>@hb.ucsc.edu>:/path/to/destination/
 
-#example
-scp Downloads/Wwil_fastq.tar.gz jomojaco@hb.ucsc.edu:/home/bootcamp/
+# example:
+scp Downloads/Wwil_fastq.tar.gz aanakamo@hb.ucsc.edu:/hb/home/aanakamo/bootcamp2024/
 ```
 
 
-Check that the file is in your directory with `ls`. Now, uncompress it with:
+Once you've gotten `Wwil_fastq.tar.gz` onto hummingbird, check that the file is in your directory with `ls`. Now, uncompress it with:
 
 ```
 tar -xvf Wwil_fastq.tar.gz
