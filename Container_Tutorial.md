@@ -94,7 +94,9 @@ It should look something like this
 singularity exec image.simg softwareName --help  
 ```
 
-### creating custom containers 
+### creating custom containers (???)
+
+9/2/24 - need to talk to Rion about how we can do this - it appears to require sudo
 
 docker run into base images 
 
