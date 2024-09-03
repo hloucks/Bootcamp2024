@@ -185,7 +185,7 @@ Here is an overview of the basic makeup of a slurm script from the [Hummingbird 
 
 Make your own edits to the above template to run your script we created above and launch using 
 ```
-sbach mySlurm.slurm
+sbatch mySlurm.slurm
 ```
 
 Here is a [slurm cheatsheet](https://arc.umich.edu/wp-content/uploads/sites/4/2020/05/Great-Lakes-Cheat-Sheet.pdf) that I reference pretty frequently.
