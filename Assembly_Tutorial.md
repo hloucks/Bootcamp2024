@@ -37,17 +37,20 @@ cd bootcamp2024
 
 ## 0.5. Start an interactive slurm job
 
-Before running more computationally intensive commands, you want to reserve space on a node (for cluster etiquette). This ensures that we don't back up the hummingbird login node, which could otherwise become slow for other users if everyone runs stuff there. We could do this by submitting a job to slurm, or by starting an interactive job. Here we will start an interactive job, so that you can see what's happening and test things out.
+Before running more computationally intensive commands, you want to reserve space on a node. This is good cluster ettiquite and ensures that we don't back up the hummingbird login node, which could otherwise become slow for other users if everyone runs stuff there. We can do this by submitting a job to slurm, or by starting an interactive job. Here we will start an interactive job, so that you can see what's happening during the assembly process and test things out.
 
 Start an interactive job (that will last for 3 hours) by running:
 ```
-srun -N 1 -n 1 -p 128x24 -t 03:00:00 --pty bash
+## request resources
+salloc --partition=instruction --time=03:00:00 --mem=4G --tasks=1 --cpus-per-task=1
+## once granted resources on a node, ssh to that node
+ssh ${SLURM_NODELIST}
 ```
-If you want, you could see what all the options mean by running `srun -h`. 
+If you want, you can see what all the options mean by running `salloc -h`, or visiting [this humminbird tutorial](https://hummingbird.ucsc.edu/documentation/getting-an-interactive-allocation-for-instructional-use/).
 
-Once the interactive job starts, you should see the host in the terminal prompt change from the login node (`aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-07`). Please try to remember to start interactive jobs (or submit a job to slurm) whenever you're downloading files, installing/running tools, etc!
+Once you ssh to the node where you've been granted resources, you should see the host in the terminal prompt change from the login node (`aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-07`). Please remember to start interactive jobs (or submit a job to slurm) whenever you're downloading files, installing/running tools, etc!
 
-Once you are done running things, you can end the interactive job by running `exit`, which will end the job and return you to the login node. Or, the job will end once it reaches the time limit, but try to remember to exit when you're done. But, leave it running now as you move onto the next step.
+Once you are done running things, you can end the interactive job by running `exit`, which will end the job and return you to the login node. Or, the job will end once it reaches the time limit, but try to remember to exit when you're done. For now though, leave it running as you move onto the next step.
 
 ## 1. Download fastq files produced by the Guppy basecaller
 
@@ -86,35 +89,7 @@ You should now have a new folder in your current directory titled `Wwil_fastq`. 
 ls Wwil_fastq/
 ```
 
-## 2. Create a conda environment for assembly.
-
-We need to install the Flye assembler onto hummingbird to run our assembly. We can do this using conda, which is already installed on hummingbird. If you are working on your own computer, you'll need to install conda. You can do this on the command line by downloading the conda installer [here](https://docs.conda.io/en/latest/miniconda.html#latest-miniconda-installer-links), then running `bash <Miniconda_blah_blah.sh>`
-
-
-First, load conda
-```
-module load miniconda3.9
-```
-
-Now, we create a new conda environment and install the latest flye in it.
-
-```
-conda create -n flye_29 -c conda-forge -c bioconda flye=2.9
-```
-To activate this environment, run
-```
-conda activate flye_29
-```
-You'll know you have activated the environment if `(flye_29)` is at the beginning of your command prompt, like this
-```
-(flye_29) [aanakamo@hb progs]$
-```
-You can test that flye works by running:
-```
-flye -h
-```
-
-## 3. Preprocessing data
+## 2. Preprocessing data
 
 First, we need to combine all our fastq files into one file.
 ```
@@ -125,23 +100,36 @@ cat *.fastq.gz > merged.fastq.gz
 
 We need to make sure to remove any duplicate fastq files from the sequencing reads, too.
 
-We can use `seqkit` for this. We're going to install it on hummingbird using conda.
+We can use `seqkit` for this, which is available as a module on hummingbird. Load the module by running:
 
 ```
-conda install -c bioconda seqkit
-conda activate seqkit
+module load seqkit
+```
+You can check that it loaded properly by running the following command, and you should see `seqkit/2.5.1` in the list of currently loaded modules.
+```
+module list
 ```
 
-Now run
+Now run the following to remove duplicates
 ```
 seqkit rmdup merged.fastq.gz -o merged.rmdup.fastq.gz
 ```
 
-## 4. Running Flye assembler
+All of the tools we will be using for the assembly portion of this tutorial are available as modules on hummingbird. Each module contains the exact dependencies needed for running the particular tool, and these can sometimes conflict if you have more than one module loaded (doesn't always happen, but it's a good habit to keep only modules you need loaded). So, lets unload `seqkit` before moving on.
+```
+module unload seqkit
+```
 
-The Flye [manual](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) gives a whole list of all the possible parameters we can give Flye. You can also check these by running `flye -h` Please read through the section in the manual giving descriptions of these parameters [(here)](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md#-parameter-descriptions) and make sure you understand why this is the command we need to run:
+## 3. Running Flye assembler
 
-> Note: Flye took me 43 minutes to run on 1 thread. Hummingbird has 48 threads available. Lets keep everyone to 1 thread `-t 1` so we don't completely take over hummingbird. I'd reccommend running this in a screen.
+Next we will use Flye to perform genome assembly. Load the module:
+```
+module load flye
+```
+
+The [Flye manual](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) gives a whole list of all the possible parameters we can give Flye. You can also check these by running `flye -h`. Please read through the section in the manual giving descriptions of these parameters [(here)](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md#-parameter-descriptions) and make sure you understand why this is the command we need to run:
+
+> Note: Flye took me 43 minutes to run on 1 thread. Hummingbird has 48 threads available. Lets keep everyone to 1 thread `-t 1` so we don't completely take over hummingbird.
 
 ```
 # move back to your bootcamp2024 directory
@@ -149,9 +137,6 @@ cd ../
 
 # create output directory for flye
 mkdir flye
-
-# activate conda environment
-conda activate flye_29
 
 # run flye assembler
 time flye --nano-hq /hb/home/aanakamo/bootcamp2024/Wwil_fastq/merged.rmdup.fastq.gz -t 1 --out-dir /hb/home/aanakamo/bootcamp2024/flye/
@@ -169,19 +154,21 @@ Consult the Flye manual about what these files represent. Which one contains the
 
 > Hint: take a look in `assembly_info.txt`
 
-## 5. Assembly quality control
+Conce you're done, unload Flye before continuing to the next step.
+```
+module load flye
+```
+
+## 4. Assembly quality control
 
 We will use the tool [Quast](https://quast.sourceforge.net/docs/manual.html#sec2.1) to assess the quality of our genome assembly.
 
-First, lets install it in a new conda environment
+First, lets load the module:
 ```
-module load miniconda3.9
-
-conda create -n quast -c conda-forge -c bioconda quast
+module load quast
 ```
 Running Quast:
 ```
-conda activate quast
 mkdir quast
 
 time quast /hb/home/aanakamo/bootcamp2024/flye/assembly.fasta --nanopore /hb/home/aanakamo/bootcamp2024/Wwil_fastq/merged.rmdup.fastq.gz -t 1 -o /hb/home/aanakamo/bootcamp2024/quast --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 1200000
@@ -201,7 +188,7 @@ scp -r aanakamo@hb.ucsc.edu:/hb/home/aanakamo/bootcamp2024/quast/ .
 
 What do the metrics and plots output by Quast tell us about the quality and completeness of our assembly? Do we have enough information to say whether our assembly is "good"?
 
-## 6. Independent project and presentation
+## 5. Independent project and presentation
 
 For the rest of bootcamp, your task is to find an interesting analysis to do with our Wolbachia data. You may use the assembly, the sequencing reads, or both. This is **purposefully open-ended**, to give you practice with developing your own question or hypothesis, figuring out the research steps necessary to answer it, executing those steps, and presenting your work to others.  
 
@@ -218,3 +205,5 @@ To get you started, we've come up with some project ideas you may use for the in
 - Comparative genomics: [Mauve](https://darlinglab.org/mauve/mauve.html), [Mummer](https://mummer.sourceforge.net) Are there interesting variations between our assembly and other relevant datasets?
 - Take the repeat graph produced by Flye and visualize it in [Bandage](https://github.com/rrwick/Bandage). What does this visualization show you about the repeat structure and quality of the assembly?
 - Present an in depth dive into QUAST performance metrics. Generate informative plots about the quality of our assemblies. Can you find any other tools to evaluate the quality of our assembly?
+
+Finally, there are many bioinformatic tools already installed on hummingbird, which you can view by running `module avail`. We expect most tools you might consider using for your independent project to already be available. However, if there's a tool you're interested in that is not on hummingbird, let us know and we can help you with installing it.
