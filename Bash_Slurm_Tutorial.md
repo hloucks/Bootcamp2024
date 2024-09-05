@@ -89,35 +89,41 @@ find . -name myOutput.txt | readlink -f stdin
 /hb/home/ourNetID/stdin
 ```
 
-### Using screens 
 
-Often when you are running an interactive session you might want to be able to step away or switch over to another project you are working on. One way of doing this is by using screens
+### Using Tmux 
 
-First let's create a screen and run some basic commands 
+Often when you are running an interactive session you might want to be able to step away or switch over to another project you are working on. One way of doing this is by using tmux
+
+First let's create a tmux session and run some basic commands 
 ```
-screen -S myScreen  
+tmux new -s myScreen  
 
-pwd
+pwd 
 
 touch Screentest.txt
 
 ```
 
-Now detach from your screen using Ctrl+A+D and then change directories by typing `cd`
+Now detach from your session using `tmux detach` and then change directories by typing `cd`
 
-Now you should be able to reattach using 
+Now you should be able to see your sessions using 
 ```
-screen -r myScreen
+tmux list-sessions
+
+```
+And reattach using 
+```
+tmux attach
 ```
 And voila, you history should be there and you should still be in the same location you were when you left the screen. 
 
-To exit and kill the screen you can simply type `exit`while in the screen. 
 
-Screens are useful if you need to let something run, or sometimes if you are using the cluster with an inconsistent network connection. This way if your PC or internet die your session will still be intact (barring a server reboot).
 
-Make sure to clear any screens you aren't using. To check what screens you have in place you can use `screen -ls`
+Tmux sessions are useful if you need to let something run, or sometimes if you are using the cluster with an inconsistent network connection. This way if your PC or internet die your session will still be intact (barring a server reboot).
 
-Tmux is also a good option similar to screens with more functionality. You can find more information [here](https://man7.org/linux/man-pages/man1/tmux.1.html)
+Make sure to clear any sessions you aren't using. To check what sessions you have in place you can use `tmux ls` then reattach to kill the screen you can simply type `exit`while in the screen. Alternatively you can just use `tmux kill-session`
+
+You can find more information [here](https://man7.org/linux/man-pages/man1/tmux.1.html)
 
 
 ### BashRC file familiarity 
@@ -137,6 +143,9 @@ You can do a lot of customizing of your bashrc file. For instance if you have co
 `alias ll="ls -l"`
 
 Here is more [information on bashrc file configuration](https://phoenixnap.com/kb/bashrc)
+
+### Modules 
+The hummingbird cluster is configured so that the available software can be loaded via modules. To see what software is available we can use `module avail`. This will be useful later for finding software you can use for your independent projects. 
 
 ## Slurm basics 
 
@@ -158,16 +167,21 @@ build        up   infinite      1   idle hbnode-05
 ```
 This will give you an idea of how much of the server is in use and how long your jobs might need to wait in the queue. Later on we will practice working interactively for slurm but for now we will practice launching an job with sbatch. We are going to create a basic slurm script so you have a template for when you are running your jobs later in the tutorial. 
 
-Here is an overview of the basic makeup of a slurm script from the [Hummingbird dox](https://hummingbird.ucsc.edu/documentation/creating-scripts-to-run-jobs/):
+Here is the documentation for creating SBATCH Scripts from the [Hummingbird dox](https://hummingbird.ucsc.edu/documentation/creating-scripts-to-run-jobs/):
+
+*Note* We want to make sure we are only running `module load` within a slurm script or after we have allocated space for ourselves with SLURM using `salloc`. Don't start loading modules on the head node. 
 
 ```
 #!/bin/bash
 #SBATCH --job-name=serial_job_test    # Job name
+#SBATCH --partition=instruction
 #SBATCH --mail-type=ALL               # Mail events (NONE, BEGIN, END, FAIL, ALL)
 #SBATCH --mail-user=   # Where to send mail	
-#SBATCH --ntasks=1                    # Run on a single CPU
+#SBATCH --nodes=1                    # Use one node
+#SBATCH --ntasks=1                    # Run a single task 
+#SBATCH --cpus-per-task=4            # Number of CPU cores per task
 #SBATCH --time=00:05:00               # Time limit hrs:min:sec (you may not want this)
-#SBATCH --output=   # Standard output and error log
+#SBATCH --output=parallel_%j.out     # Standard output and error log
 #SBATCH --mem=250M                    # Allocated 250 megabytes of memory for the job.
 
 #Load necessary modules (if needed)
@@ -183,7 +197,7 @@ Here is an overview of the basic makeup of a slurm script from the [Hummingbird 
 
 ```
 
-Make your own edits to the above template to run your script we created above and launch using 
+Make your own edits to the above template to run your script we created above and launch using. Make sure to use the `#SBATCH --partition=instruction` line to ensure that you are using the instructional nodes we reserved. 
 ```
 sbatch mySlurm.slurm
 ```
