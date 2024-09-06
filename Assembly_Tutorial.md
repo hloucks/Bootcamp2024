@@ -4,7 +4,7 @@ This document contains instructions for generating a de-novo assembly of a wolba
 
 I recommend that you clone this repository to your local computer, and open up this document in a text editor. That way you can save any changes you make to the code in this tutorial (like file paths)
 
-> The output files for all steps in this tutorial can be found in the [bootcamp dropbox](https://www.dropbox.com/scl/fo/7cdhhpvc0vwxaawr36iff/h?rlkey=2o6mokx3yf5kkb3upymjab5yr&dl=0). If you get stuck and fall behind, feel free to use these files to move ahead.  
+> The output files for all steps in this tutorial can be found in our group folder on hummingbird: `/hb/groups/bmebootcamp-2024`. If you get stuck and fall behind, feel free to use these files to move ahead.  
 
 ## 0. Log onto the hummingbird server and create a project directory
 
@@ -43,51 +43,23 @@ Start an interactive job (that will last for 3 hours) by running:
 ```
 ## request resources
 salloc --partition=instruction --time=03:00:00 --mem=4G --tasks=1 --cpus-per-task=1
-## once granted resources on a node, ssh to that node
+```
+
+Once granted resources on a node, ssh to that node
+```
 ssh ${SLURM_NODELIST}
 ```
 If you want, you can see what all the options mean by running `salloc -h`, or visiting [this humminbird tutorial](https://hummingbird.ucsc.edu/documentation/getting-an-interactive-allocation-for-instructional-use/).
 
-Once you ssh to the node where you've been granted resources, you should see the host in the terminal prompt change from the login node (`aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-07`). Please remember to start interactive jobs (or submit a job to slurm) whenever you're downloading files, installing/running tools, etc!
+Once you ssh to the node where you've been granted resources, you should see the host in the terminal prompt change from the login node (ie. `aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-07`). Please remember to start interactive jobs (or submit a job to slurm) whenever you're downloading files, installing/running tools, etc!
 
 Once you are done running things, you can end the interactive job by running `exit`, which will end the job and return you to the login node. Or, the job will end once it reaches the time limit, but try to remember to exit when you're done. For now though, leave it running as you move onto the next step.
 
-## 1. Download fastq files produced by the Guppy basecaller
+## 1. Access the fastq files produced by the Guppy basecaller
 
-The fastq files that were generated from the nanopore library you created are [located here](). The fastq files from our preliminary nanopore experiments are [located in this dropbox folder](https://www.dropbox.com/scl/fo/7cdhhpvc0vwxaawr36iff/h?rlkey=2o6mokx3yf5kkb3upymjab5yr&dl=0). 
+The fastq files that were generated from the nanopore library you created are located in our shared group directory `/hb/groups/bmebootcamp-2024`. The fastq files from our preliminary nanopore experiments are at `/hb/groups/bmebootcamp-2024`.
 
 The fastq files are in this file called: `Wwil_fastq.tar.gz`
-
-Here is the link to this file in dropbox: `https://www.dropbox.com/scl/fi/o1e00wivre76rv004036w/Wwil_fastq.tar.gz?rlkey=urd8unwxfjev31qf721ed65s3&dl=0`
-
-To download the files to hummingbird, go back to your terminal and type `wget -O Wwil_fastq.tar.gz` then add a space and paste the link above. The command should look like this:
-
-```
-wget -O Wwil_fastq.tar.gz <[link from dropbox]>
-
-# Run this:
-wget -O Wwil_fastq.tar.gz https://www.dropbox.com/scl/fi/o1e00wivre76rv004036w/Wwil_fastq.tar.gz?rlkey=urd8unwxfjev31qf721ed65s3&dl=0
-```
-
-Alternatively, to upload files from your local machine, first download the files from Dropbox, open a new terminal session (not logged in to hummingbird) and then use the following command to copy files over to hummingbird. 
-
-```
-scp /path/to/file  <your_cruzid>@hb.ucsc.edu>:/path/to/destination/
-
-# example:
-scp Downloads/Wwil_fastq.tar.gz aanakamo@hb.ucsc.edu:/hb/home/aanakamo/bootcamp2024/
-```
-
-
-Once you've gotten `Wwil_fastq.tar.gz` onto hummingbird, check that the file is in your directory with `ls`. Now, uncompress it with:
-
-```
-tar -xvf Wwil_fastq.tar.gz
-```
-You should now have a new folder in your current directory titled `Wwil_fastq`. You can confirm that the fastq files are inside of it with:
-```
-ls Wwil_fastq/
-```
 
 ## 2. Preprocessing data
 
@@ -156,7 +128,7 @@ Consult the Flye manual about what these files represent. Which one contains the
 
 Conce you're done, unload Flye before continuing to the next step.
 ```
-module load flye
+module unload flye
 ```
 
 ## 4. Assembly quality control
