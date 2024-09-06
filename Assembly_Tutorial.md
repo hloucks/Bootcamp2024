@@ -57,12 +57,15 @@ Once you are done running things, you can end the interactive job by running `ex
 
 ## 1. Access the fastq files produced by the Guppy basecaller
 
-The fastq files from our preliminary nanopore experiments are located in our shared group directory at `/hb/groups/bmebootcamp-2024/wolbachia_fastq`. The fastq files that were generated from the nanopore library you created are `/hb/groups/bmebootcamp-2024/${coming_soon}`. 
+The fastq files from our preliminary nanopore experiments are located in our shared group directory at `/hb/groups/bmebootcamp-2024/wolbachia_fastq`. The fastq files that were generated from the nanopore library you created will be here: `/hb/groups/bmebootcamp-2024/${coming_soon}`. 
 
-The fastq file we will be working with in that directory is called `wRi_merrill_23_filtered.fastq.gz`. Copy it into your bootcamp folder (the `.` indicates the current directory, which should still be bootcamp2024):
+The fastq file we will be working with in that directory is called `wRi_merrill_23_filtered.fastq.gz`. Change directories back into your bootcamp directory (the the `~` indicates your home directory, where your bootcamp directory is located). Then copy the fastq file into your bootcamp folder (the `.` indicates the current directory, which is bootcamp2024):
 ```
+cd ~/bootcamp2024
 cp /hb/groups/bmebootcamp-2024/wolbachia_fastq/wRi_merrill_23_filtered.fastq.gz .
 ```
+
+Now `ls` and see that `wRi_merrill_23_filtered.fastq.gz` has been copied into your bootcamp directory.
 
 ## 2. Preprocessing data
 
