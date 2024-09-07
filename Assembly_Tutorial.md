@@ -81,10 +81,15 @@ You can check that it loaded properly by running the following command, and you 
 module list
 ```
 
-Now run the following to remove duplicates
+Now run the following to remove duplicates (should run in a few seconds)
 ```
 seqkit rmdup wRi_merrill_23_filtered.fastq.gz -o wRi_merrill_23_filtered.rmdup.fastq.gz
 ```
+In this case, you'll see the following message indicating that there were no duplicate reads.
+```
+[INFO] 0 duplicated records removed
+```
+This is likely because there was no PCR step in our library prep protocol. However, it is best practice to check for them, since assembly with Flye will error if there are duplicates.
 
 All of the tools we will be using for the assembly portion of this tutorial are available as modules on hummingbird. Each module contains the exact dependencies needed for running the particular tool, and these can sometimes conflict if you have more than one module loaded (doesn't always happen, but it's a good habit to keep only modules you need loaded). So, lets unload `seqkit` before moving on.
 ```
@@ -100,7 +105,7 @@ module load flye
 
 The [Flye manual](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) gives a whole list of all the possible parameters we can give Flye. You can also check these by running `flye -h`. Please read through the section in the manual giving descriptions of these parameters [(here)](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md#-parameter-descriptions) and make sure you understand why this is the command we need to run:
 
-> Note: Flye took me 43 minutes to run on 1 thread. Hummingbird has 48 threads available. Lets keep everyone to 1 thread `-t 1` so we don't completely take over hummingbird.
+> Note: Flye took me 8 minutes to run on 1 thread
 
 ```
 # create output directory for flye
