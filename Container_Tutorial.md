@@ -21,7 +21,7 @@ module load singularity-ce/singularity-ce.4.1.4
 ```
 singularity pull shub://vsoch/hello-world 
 
-singularity build --fakeroot hello-world.simg shub://vsoch/hello-world
+singularity build hello-world.simg shub://vsoch/hello-world
 
 ```
 
