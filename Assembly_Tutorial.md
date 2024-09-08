@@ -1,10 +1,10 @@
-# De-novo assembly of a Wolbachia genome
+# De-novo assembly of a _Wolbachia_ genome
 
-This document contains instructions for generating a de-novo assembly of a wolbachia genome for BMEB bootcamp 2024. This is part 1 of the computational portion of the bootcamp.
+This document contains instructions for generating a de-novo assembly of a _Wolbachia_ genome for BMEB bootcamp 2024. This is part 1 of the computational portion of the bootcamp.
 
-I recommend that you clone this repository to your local computer, and open up this document in a text editor. That way you can save any changes you make to the code in this tutorial (like file paths)
+I recommend that you clone this repository to your local computer, and open up this document in a text editor. That way you can save any changes you make to the code in this tutorial (like file paths).
 
-> The output files for all steps in this tutorial can be found in our group folder on hummingbird: `/hb/groups/bmebootcamp-2024`. If you get stuck and fall behind, feel free to use these files to move ahead.  
+> The output files for all steps in this tutorial can be found in our group folder on hummingbird: `/hb/groups/bmebootcamp-2024/wWil_results`. If you get stuck and fall behind, feel free to use these files to move ahead.  
 
 ## 0. Log onto the hummingbird server and create a project directory
 
@@ -16,14 +16,12 @@ ssh <your_cruzid>@hb.ucsc.edu
 ```
 
 You should be in your home directory. You can check the directory you are in by typing `pwd`. This stands for "print working directory" Mine looks like this:
-
 ```
 [aanakamo@hb ~]$ pwd
 /hb/home/aanakamo
 ```
 
 Create a new folder in your home directory for this analysis. Its good practice to keep your directories well organized.
-
 ```
 mkdir bootcamp2024
 ```
@@ -44,52 +42,59 @@ Start an interactive job (that will last for 3 hours) by running:
 ## request resources
 salloc --partition=instruction --time=03:00:00 --mem=4G --tasks=1 --cpus-per-task=1
 ```
+If you want, you can see what all the options mean by running `salloc -h`, or visiting [this humminbird tutorial](https://hummingbird.ucsc.edu/documentation/getting-an-interactive-allocation-for-instructional-use/).
 
 Once granted resources on a node, ssh to that node
 ```
 ssh ${SLURM_NODELIST}
 ```
-If you want, you can see what all the options mean by running `salloc -h`, or visiting [this humminbird tutorial](https://hummingbird.ucsc.edu/documentation/getting-an-interactive-allocation-for-instructional-use/).
 
-Once you ssh to the node where you've been granted resources, you should see the host in the terminal prompt change from the login node (ie. `aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-07`). Please remember to start interactive jobs (or submit a job to slurm) whenever you're downloading files, installing/running tools, etc!
+Once you ssh to the node where you've been granted resources, you should see the host in the terminal prompt change from the login node (ie. `aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-07`). It will also return you to your home directory, so change back into your bootcamp directory.
+```
+cd bootcamp2024
+```
+
+Please remember to start interactive jobs (or submit a job to slurm) whenever you're downloading files, installing/running tools, etc!
 
 Once you are done running things, you can end the interactive job by running `exit`, which will end the job and return you to the login node. Or, the job will end once it reaches the time limit, but try to remember to exit when you're done. For now though, leave it running as you move onto the next step.
 
 ## 1. Access the fastq files produced by the Guppy basecaller
 
-The fastq files from our preliminary nanopore experiments are located in our shared group directory at `/hb/groups/bmebootcamp-2024/wolbachia_fastq`. The fastq files that were generated from the nanopore library you created will be here: `/hb/groups/bmebootcamp-2024/${coming_soon}`. 
+The fastq files from our preliminary nanopore experiments are located in our shared group directory at `/hb/groups/bmebootcamp-2024/Wwil_fastq`. We will use last year's data (from _Wolbachia willistoni_) for the purposes of this tutorial, while waiting for the data from the libraries you all generated for wRi. The fastq files that will be generated from the nanopore library you created for wRi will be here: `/hb/groups/bmebootcamp-2024/${coming_soon}`. 
 
-The fastq file we will be working with in that directory is called `wRi_merrill_23_filtered.fastq.gz`. Change directories back into your bootcamp directory (the the `~` indicates your home directory, where your bootcamp directory is located). Then copy the fastq file into your bootcamp folder (the `.` indicates the current directory, which is bootcamp2024):
+The fastq file we will be working with in that directory is called `wWil.merged.fastq.gz`. Make sure you're still in your bootcamp directory (the the `~` indicates your home directory, where your bootcamp directory is located). Then copy the fastq file into your bootcamp folder (the `.` indicates the current directory, which is bootcamp2024):
 ```
 cd ~/bootcamp2024
-cp /hb/groups/bmebootcamp-2024/wolbachia_fastq/wRi_merrill_23_filtered.fastq.gz .
+cp /hb/groups/bmebootcamp-2024/Wwil_fastq/wWil.merged.fastq.gz .
 ```
 
-Now `ls` and see that `wRi_merrill_23_filtered.fastq.gz` has been copied into your bootcamp directory.
+Now `ls` and see that `wWil.merged.fastq.gz` has been copied into your bootcamp directory.
 
 ## 2. Preprocessing data
 
 First we need to make sure to remove any duplicate reads from the fastq files.
 
 We can use `seqkit` for this, which is available as a module on hummingbird. Load the module by running:
-
 ```
 module load seqkit
 ```
+
 You can check that it loaded properly by running the following command, and you should see `seqkit/2.5.1` in the list of currently loaded modules.
 ```
 module list
 ```
 
-Now run the following to remove duplicates (should run in a few seconds)
+Now run the following to remove duplicates
 ```
-seqkit rmdup wRi_merrill_23_filtered.fastq.gz -o wRi_merrill_23_filtered.rmdup.fastq.gz
+time seqkit rmdup wWil.merged.fastq.gz -o wWil.merged.rmdup.fastq.gz
 ```
-In this case, you'll see the following message indicating that there were no duplicate reads.
+> Note: This took about 1 minute to run
+
+When seqkit finishes, you'll see the following message indicating that there were duplicate reads removed.
 ```
-[INFO] 0 duplicated records removed
+[INFO] 203581 duplicated records removed
 ```
-This is likely because there was no PCR step in our library prep protocol. However, it is best practice to check for them, since assembly with Flye will error if there are duplicates.
+This step is important, since assembly with Flye will error if there are duplicates.
 
 All of the tools we will be using for the assembly portion of this tutorial are available as modules on hummingbird. Each module contains the exact dependencies needed for running the particular tool, and these can sometimes conflict if you have more than one module loaded (doesn't always happen, but it's a good habit to keep only modules you need loaded). So, lets unload `seqkit` before moving on.
 ```
@@ -104,16 +109,14 @@ module load flye
 ```
 
 The [Flye manual](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) gives a whole list of all the possible parameters we can give Flye. You can also check these by running `flye -h`. Please read through the section in the manual giving descriptions of these parameters [(here)](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md#-parameter-descriptions) and make sure you understand why this is the command we need to run:
-
-> Note: Flye took me 8 minutes to run on 1 thread
-
 ```
 # create output directory for flye
 mkdir flye
 
 # run flye assembler
-time flye --nano-hq wRi_merrill_23_filtered.rmdup.fastq.gz -t 1 --out-dir flye
+time flye --nano-hq wWil.merged.rmdup.fastq.gz -t 1 --out-dir flye
 ```
+> Note: Flye took me 8 minutes to run on 1 thread
 
 Take a look at the output of Flye
 ```
@@ -129,7 +132,6 @@ You should see the following files in your directory
 ```
 
 Consult the Flye manual about what these files represent. Which one contains the assembly? Discuss these files as a group.
-
 > Hint: take a look in `assembly_info.txt`
 
 Conce you're done, unload Flye before continuing to the next step.
@@ -145,13 +147,14 @@ First, lets load the module:
 ```
 module load quast
 ```
+
 Running Quast:
 ```
 # go back to your bootcamp directory
 cd ..
 mkdir quast
 
-time quast flye/assembly.fasta --nanopore wRi_merrill_23_filtered.rmdup.fastq.gz -t 1 -o quast --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 1200000
+time quast flye/assembly.fasta --nanopore wWil.merged.rmdup.fastq.gz -t 1 -o quast --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 1200000
 ```
 > Quast took me 8 minutes to run on 1 thread.
 
@@ -170,7 +173,7 @@ What do the metrics and plots output by Quast tell us about the quality and comp
 
 ## 5. Independent project and presentation
 
-For the rest of bootcamp, your task is to find an interesting analysis to do with our Wolbachia data. You may use the assembly, the sequencing reads, or both. This is **purposefully open-ended**, to give you practice with developing your own question or hypothesis, figuring out the research steps necessary to answer it, executing those steps, and presenting your work to others.  
+For the rest of bootcamp, your task is to find an interesting analysis to do with our _Wolbachia_ data. You may use the assembly, the sequencing reads, or both. This is **purposefully open-ended**, to give you practice with developing your own question or hypothesis, figuring out the research steps necessary to answer it, executing those steps, and presenting your work to others.  
 
 We DO NOT expect everyone to come up with incredible groundbreaking results. The **worst thing you could do** would be to give up and not present anything, just because you couldn't get an analysis to work. Share your project idea, what you tried, what worked and what didn't, and what you learned from the project if you aren't able to get results for this independent portion.
 
@@ -178,14 +181,15 @@ To get you started, we've come up with some project ideas you may use for the in
 
 #### Project ideas:
 
-- where are rearrangements?
-- where are changes, in what functional elements?
 - Find additional assembly tools and run them on our data. Compare their quality against our Flye assembly. Which assembly tool produces the best quality assembly?
 - Implement an algorithm to walk along the repeat graph produced by Flye `assembly_graph.gfa` and produce an assembly sequence. Compare your assembly to the one Flye produces.
 - Characterize the repetitive elements in our assembly (Hint: RepeatMasker)
-- Build a phylogeny with our Wolbachia assembly and other species (Hint: USHER)
-- Comparative genomics: [Mauve](https://darlinglab.org/mauve/mauve.html), [Mummer](https://mummer.sourceforge.net) Are there interesting variations between our assembly and other relevant datasets?
+- Build a phylogeny with our _Wolbachia_ assembly and other species (Hint: USHER)
+- Comparative genomics: ([Mauve](https://darlinglab.org/mauve/mauve.html), [Mummer](https://mummer.sourceforge.net)) Are there interesting variations (rearrangements, changes in functional elements) between our assembly and other relevant datasets? (Hint: compare to the wRi assembly available on NCBI)
 - Take the repeat graph produced by Flye and visualize it in [Bandage](https://github.com/rrwick/Bandage). What does this visualization show you about the repeat structure and quality of the assembly?
 - Present an in depth dive into QUAST performance metrics. Generate informative plots about the quality of our assemblies. Can you find any other tools to evaluate the quality of our assembly?
 
 Finally, there are many bioinformatic tools already installed on hummingbird, which you can view by running `module avail`. We expect most tools you might consider using for your independent project to already be available. However, if there's a tool you're interested in that is not on hummingbird, let us know and we can help you with installing it.
+
+Looking forward to seeing the projects you all come up with!
+
