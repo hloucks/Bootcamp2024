@@ -57,20 +57,19 @@ Once you are done running things, you can end the interactive job by running `ex
 
 ## 1. Access the fastq files produced by the Guppy basecaller
 
-The fastq files that were generated from the nanopore library you created are located in our shared group directory `/hb/groups/bmebootcamp-2024`. The fastq files from our preliminary nanopore experiments are at `/hb/groups/bmebootcamp-2024`.
+The fastq files from our preliminary nanopore experiments are located in our shared group directory at `/hb/groups/bmebootcamp-2024/wolbachia_fastq`. The fastq files that were generated from the nanopore library you created will be here: `/hb/groups/bmebootcamp-2024/${coming_soon}`. 
 
-The fastq files are in this file called: `Wwil_fastq.tar.gz`
+The fastq file we will be working with in that directory is called `wRi_merrill_23_filtered.fastq.gz`. Change directories back into your bootcamp directory (the the `~` indicates your home directory, where your bootcamp directory is located). Then copy the fastq file into your bootcamp folder (the `.` indicates the current directory, which is bootcamp2024):
+```
+cd ~/bootcamp2024
+cp /hb/groups/bmebootcamp-2024/wolbachia_fastq/wRi_merrill_23_filtered.fastq.gz .
+```
+
+Now `ls` and see that `wRi_merrill_23_filtered.fastq.gz` has been copied into your bootcamp directory.
 
 ## 2. Preprocessing data
 
-First, we need to combine all our fastq files into one file.
-```
-cd Wwil_fastq/
-
-cat *.fastq.gz > merged.fastq.gz
-```
-
-We need to make sure to remove any duplicate fastq files from the sequencing reads, too.
+First we need to make sure to remove any duplicate reads from the fastq files.
 
 We can use `seqkit` for this, which is available as a module on hummingbird. Load the module by running:
 
@@ -82,10 +81,15 @@ You can check that it loaded properly by running the following command, and you 
 module list
 ```
 
-Now run the following to remove duplicates
+Now run the following to remove duplicates (should run in a few seconds)
 ```
-seqkit rmdup merged.fastq.gz -o merged.rmdup.fastq.gz
+seqkit rmdup wRi_merrill_23_filtered.fastq.gz -o wRi_merrill_23_filtered.rmdup.fastq.gz
 ```
+In this case, you'll see the following message indicating that there were no duplicate reads.
+```
+[INFO] 0 duplicated records removed
+```
+This is likely because there was no PCR step in our library prep protocol. However, it is best practice to check for them, since assembly with Flye will error if there are duplicates.
 
 All of the tools we will be using for the assembly portion of this tutorial are available as modules on hummingbird. Each module contains the exact dependencies needed for running the particular tool, and these can sometimes conflict if you have more than one module loaded (doesn't always happen, but it's a good habit to keep only modules you need loaded). So, lets unload `seqkit` before moving on.
 ```
@@ -101,20 +105,22 @@ module load flye
 
 The [Flye manual](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) gives a whole list of all the possible parameters we can give Flye. You can also check these by running `flye -h`. Please read through the section in the manual giving descriptions of these parameters [(here)](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md#-parameter-descriptions) and make sure you understand why this is the command we need to run:
 
-> Note: Flye took me 43 minutes to run on 1 thread. Hummingbird has 48 threads available. Lets keep everyone to 1 thread `-t 1` so we don't completely take over hummingbird.
+> Note: Flye took me 8 minutes to run on 1 thread
 
 ```
-# move back to your bootcamp2024 directory
-cd ../
-
 # create output directory for flye
 mkdir flye
 
 # run flye assembler
-time flye --nano-hq /hb/home/aanakamo/bootcamp2024/Wwil_fastq/merged.rmdup.fastq.gz -t 1 --out-dir /hb/home/aanakamo/bootcamp2024/flye/
+time flye --nano-hq wRi_merrill_23_filtered.rmdup.fastq.gz -t 1 --out-dir flye
 ```
 
-Take a look at the output of Flye. You should see the following files in your directory
+Take a look at the output of Flye
+```
+cd flye; ls
+```
+
+You should see the following files in your directory
 ```
 [aanakamo@hb flye]$ ls
 00-assembly   30-contigger    assembly_graph.gfa  flye.log
@@ -141,9 +147,11 @@ module load quast
 ```
 Running Quast:
 ```
+# go back to your bootcamp directory
+cd ..
 mkdir quast
 
-time quast /hb/home/aanakamo/bootcamp2024/flye/assembly.fasta --nanopore /hb/home/aanakamo/bootcamp2024/Wwil_fastq/merged.rmdup.fastq.gz -t 1 -o /hb/home/aanakamo/bootcamp2024/quast --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 1200000
+time quast flye/assembly.fasta --nanopore wRi_merrill_23_filtered.rmdup.fastq.gz -t 1 -o quast --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 1200000
 ```
 > Quast took me 8 minutes to run on 1 thread.
 
@@ -170,6 +178,8 @@ To get you started, we've come up with some project ideas you may use for the in
 
 #### Project ideas:
 
+- where are rearrangements?
+- where are changes, in what functional elements?
 - Find additional assembly tools and run them on our data. Compare their quality against our Flye assembly. Which assembly tool produces the best quality assembly?
 - Implement an algorithm to walk along the repeat graph produced by Flye `assembly_graph.gfa` and produce an assembly sequence. Compare your assembly to the one Flye produces.
 - Characterize the repetitive elements in our assembly (Hint: RepeatMasker)
