@@ -31,7 +31,7 @@ Change into this new directory for the rest of the analysis
 cd bootcamp2024
 ```
 
-> Note: If you are new to linux commands, please refer to the [provided reference slides](https://docs.google.com/presentation/d/1hjIfozfQkjL4gj1eUtvBqgzpWERAkF8Uw43ToAQSxa8/edit#slide=id.p)
+> Note: If you are new to linux commands, please refer to the [provided reference slides](https://docs.google.com/presentation/d/1hjIfozfQkjL4gj1eUtvBqgzpWERAkF8Uw43ToAQSxa8/edit#slide=id.p)  
 
 ## 0.5. Start an interactive slurm job
 
@@ -49,7 +49,7 @@ Once granted resources on a node, ssh to that node
 ssh ${SLURM_NODELIST}
 ```
 
-Once you ssh to the node where you've been granted resources, you should see the host in the terminal prompt change from the login node (ie. `aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-07`). It will also return you to your home directory, so change back into your bootcamp directory.
+Once you ssh to the node where you've been granted resources, you should see the host in the terminal prompt change from the login node (ie. `aanakamo@hb-login`) to a different node (ie. `aanakamo@hbnode-03`). It will also return you to your home directory, so change back into your bootcamp directory.
 ```
 cd bootcamp2024
 ```
@@ -88,7 +88,7 @@ Now run the following to remove duplicates
 ```
 time seqkit rmdup wWil.merged.fastq.gz -o wWil.merged.rmdup.fastq.gz
 ```
-> Note: This took about 1 minute to run
+> Note: This took about 1 minute to run  
 
 When seqkit finishes, you'll see the following message indicating that there were duplicate reads removed.
 ```
@@ -116,7 +116,12 @@ mkdir flye
 # run flye assembler
 time flye --nano-hq wWil.merged.rmdup.fastq.gz -t 1 --out-dir flye
 ```
-> Note: Flye took me 8 minutes to run on 1 thread
+> Note: Flye took me about ___ to run on one thread.
+
+In the interest of time, it would be a good idea to grab the flye output from our shared folder and continue to the next step. You can always try running flye all the way through on your own time.
+```
+cp -r /hb/groups/bmebootcamp-2024/wWil_results/flye .
+```
 
 Take a look at the output of Flye
 ```
@@ -132,7 +137,7 @@ You should see the following files in your directory
 ```
 
 Consult the Flye manual about what these files represent. Which one contains the assembly? Discuss these files as a group.
-> Hint: take a look in `assembly_info.txt`
+> Hint: take a look in `assembly_info.txt`  
 
 Conce you're done, unload Flye before continuing to the next step.
 ```
@@ -151,22 +156,22 @@ module load quast
 Running Quast:
 ```
 # go back to your bootcamp directory
-cd ..
+cd ~/bootcamp2024
 mkdir quast
 
 time quast flye/assembly.fasta --nanopore wWil.merged.rmdup.fastq.gz -t 1 -o quast --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 1200000
 ```
-> Quast took me 8 minutes to run on 1 thread.
+> Quast took me 8 minutes to run on 1 thread.  
 
 Take some time to research the metrics and figures that QUAST produces, and discuss as a group. Which ones are informative about the quality of our assembly?
 
 - [Quast Github](https://github.com/ablab/quast)
 - [Quast Manual](https://quast.sourceforge.net/docs/manual.html#sec2.1)
 
-I would reccommend downloading the quast output to your personal computer, so you can open all the figures it produces. To do this, open a new terminal window (on your personal computer, NOT on hummingbird) and run the following command (changing my username to yours)
+I would reccommend downloading the quast output to your personal computer, so you can open all the figures it produces. To do this, open a new terminal window (on your personal computer, NOT on hummingbird) and run the following command (replace `{username}` with yours)
 
 ```
-scp -r aanakamo@hb.ucsc.edu:/hb/home/aanakamo/bootcamp2024/quast/ .
+scp -r {username}@hb.ucsc.edu:/hb/home/{username}/bootcamp2024/quast/ .
 ```
 
 What do the metrics and plots output by Quast tell us about the quality and completeness of our assembly? Do we have enough information to say whether our assembly is "good"?
