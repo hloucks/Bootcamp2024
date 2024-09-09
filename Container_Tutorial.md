@@ -9,7 +9,7 @@ Containers are great to familiarize yourself with as a bioinformatician, as they
 
 First let's allocate some resources for our session and load singularity 
 ```
-salloc --partition=instruction -N 1 -n 1 -p 128x24 -t 03:00:00 
+salloc --partition=instruction -N 1 -n 1 -t 03:00:00 
 ssh ${SLURM_NODELIST}
 
 module load singularity-ce/singularity-ce.4.1.4
