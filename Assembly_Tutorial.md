@@ -116,9 +116,9 @@ mkdir flye
 # run flye assembler
 time flye --nano-hq wWil.merged.rmdup.fastq.gz -t 1 --out-dir flye
 ```
-> Note: Flye took me about ___ to run on one thread.
+> Note: Flye took me about 3 hours to run on one thread.
 
-In the interest of time, it would be a good idea to grab the flye output from our shared folder and continue to the next step. You can always try running flye all the way through on your own time.
+In the interest of time, it would be a good idea to grab the flye output from our shared folder and continue to the next step. You can always try running flye all the way through on your own time (it would be a good idea to use tmux, screen, or submit a job if you do so).
 ```
 cp -r /hb/groups/bmebootcamp-2024/wWil_results/flye .
 ```
