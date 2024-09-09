@@ -161,7 +161,7 @@ mkdir quast
 
 time quast flye/assembly.fasta --nanopore wWil.merged.rmdup.fastq.gz -t 1 -o quast --circos --k-mer-stats --glimmer --conserved-genes-finding --rna-finding --est-ref-size 1200000
 ```
-> Quast took me 8 minutes to run on 1 thread.  
+> Quast took me about 20 minutes to run on 1 thread.  
 
 Take some time to research the metrics and figures that QUAST produces, and discuss as a group. Which ones are informative about the quality of our assembly?
 
