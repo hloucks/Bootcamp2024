@@ -37,13 +37,13 @@ cd bootcamp2024
 
 Before running more computationally intensive commands, you want to reserve space on a node. This is good cluster ettiquite and ensures that we don't back up the hummingbird login node, which could otherwise become slow for other users if everyone runs stuff there. We can do this by submitting a job to slurm, or by starting an interactive job. Here we will start an interactive job, so that you can see what's happening during the assembly process and test things out.
 
-Start an interactive job (that will last for 3 hours) by running:
+Start an interactive job (that will last for 5 hours) by running:
 ```
 ## create a screen so that we can leave our job running 
 screen -S bootcamp
 
 ## request resources
-salloc --partition=instruction --time=03:00:00 --mem=4G --tasks=1 --cpus-per-task=1
+salloc --partition=instruction --time=05:00:00 --mem=4G --tasks=1 --cpus-per-task=1
 ```
 If you want, you can see what all the options mean by running `salloc -h`, or visiting [this humminbird tutorial](https://hummingbird.ucsc.edu/documentation/getting-an-interactive-allocation-for-instructional-use/).
 
@@ -115,10 +115,10 @@ module load flye
 The [Flye manual](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) gives a whole list of all the possible parameters we can give Flye. You can also check these by running `flye -h`. Please read through the section in the manual giving descriptions of these parameters [(here)](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md#-parameter-descriptions) and make sure you understand why this is the command we need to run:
 ```
 # create output directory for flye
-mkdir flye
+mkdir flye_my_run
 
 # run flye assembler
-time flye --nano-hq wWil.merged.rmdup.fastq.gz -t 1 --out-dir flye
+time flye --nano-hq wWil.merged.rmdup.fastq.gz -t 1 --out-dir flye_my_run
 ```
 Now while this is running you can use ctrl+a+d to exit your screen and reattach with `screen -r bootcamp`
 
