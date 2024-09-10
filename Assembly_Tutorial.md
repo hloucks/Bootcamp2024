@@ -145,7 +145,7 @@ You should see the following files in your directory
 Consult the Flye manual about what these files represent. Which one contains the assembly? Discuss these files as a group.
 > Hint: take a look in `assembly_info.txt`  
 
-Conce you're done, unload Flye before continuing to the next step.
+Once you're done, unload Flye before continuing to the next step.
 ```
 module unload flye
 ```
@@ -154,7 +154,13 @@ module unload flye
 
 We will use the tool [Quast](https://quast.sourceforge.net/docs/manual.html#sec2.1) to assess the quality of our genome assembly.
 
-First, lets load the module:
+First, let's start a new interactive job. No need to start a screen this time, since quast finishes relatively quickly.
+```
+salloc --partition=instruction --time=05:00:00 --mem=4G --tasks=1 --cpus-per-task=1
+ssh ${SLURM_NODELIST}
+```
+
+Now load the module:
 ```
 module load quast
 ```
