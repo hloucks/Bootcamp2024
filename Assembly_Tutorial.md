@@ -39,6 +39,9 @@ Before running more computationally intensive commands, you want to reserve spac
 
 Start an interactive job (that will last for 3 hours) by running:
 ```
+## create a screen so that we can leave our job running 
+screen -S bootcamp
+
 ## request resources
 salloc --partition=instruction --time=03:00:00 --mem=4G --tasks=1 --cpus-per-task=1
 ```
@@ -62,13 +65,14 @@ Once you are done running things, you can end the interactive job by running `ex
 
 The fastq files from our preliminary nanopore experiments are located in our shared group directory at `/hb/groups/bmebootcamp-2024/Wwil_fastq`. We will use last year's data (from _Wolbachia willistoni_) for the purposes of this tutorial, while waiting for the data from the libraries you all generated for wRi. The fastq files that will be generated from the nanopore library you created for wRi will be here: `/hb/groups/bmebootcamp-2024/${coming_soon}`. 
 
-The fastq file we will be working with in that directory is called `wWil.merged.fastq.gz`. Make sure you're still in your bootcamp directory (the the `~` indicates your home directory, where your bootcamp directory is located). Then copy the fastq file into your bootcamp folder (the `.` indicates the current directory, which is bootcamp2024):
+The fastq file we will be working with in that directory is called `wWil.merged.fastq.gz`. Make sure you're still in your bootcamp directory (the the `~` indicates your home directory, where your bootcamp directory is located). We are going to create a link to the fastq file into your bootcamp folder (the `.` indicates the current directory, which is bootcamp2024):
 ```
 cd ~/bootcamp2024
-cp /hb/groups/bmebootcamp-2024/Wwil_fastq/wWil.merged.fastq.gz .
+# create a soft link to the file using the name of the file
+ln -s /hb/groups/bmebootcamp-2024/Wwil_fastq/wWil.merged.fastq.gz wWil.merged.fastq.gz
 ```
 
-Now `ls` and see that `wWil.merged.fastq.gz` has been copied into your bootcamp directory.
+Now `ls` and see that `wWil.merged.fastq.gz` has been linked in your bootcamp directory.
 
 ## 2. Preprocessing data
 
@@ -116,6 +120,8 @@ mkdir flye
 # run flye assembler
 time flye --nano-hq wWil.merged.rmdup.fastq.gz -t 1 --out-dir flye
 ```
+Now while this is running you can use ctrl+a+d to exit your screen and reattach with `screen -r bootcamp`
+
 > Note: Flye took me about 3 hours to run on one thread.
 
 In the interest of time, it would be a good idea to grab the flye output from our shared folder and continue to the next step. You can always try running flye all the way through on your own time (it would be a good idea to use tmux, screen, or submit a job if you do so).
