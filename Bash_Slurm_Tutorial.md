@@ -81,7 +81,7 @@ cd ..
 now we are going to use the find command to search for the path of our file 
 ```
 find . -name myOutput.txt
-./bashintro/myOutput.txt
+./BashIntro/myOutput.txt
 ```
 you can get the complete path by directing that output to the readlink function 
 ```
