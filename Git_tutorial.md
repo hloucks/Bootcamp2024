@@ -150,9 +150,6 @@ git commit -m "My Name"
 git push -u origin Namebranch
 ```
 
-It should look like this 
-![new_branch](pics/new_branch.png)
 
 Now if you look back at github in your browser you should be able to find your branch. In the web interface click on your branch and then "New pull request" to create a pull request. Add some notes about the time and context, then. When you are working collaboratively and are ready to merge your code in to the main code base this is how you can start that process. Now the owner of the repo can review and merge your code if there are no issues. The pull request is also an opportunity for collaborators to view your code, so they will likely provide feedback on the readability and style of your changes. 
 
-![pull_request](pics/pull_request.png)
