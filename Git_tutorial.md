@@ -53,7 +53,7 @@ git commit -m "first commit"
 git branch -M main
 ```
 
-Now go back to github on your web browser and click the + sign and "New repository"
+Now go back to github on your web browser and click the green "New" button to create a new repository.
 
 Set the repository name to be the same as the name of the directory you executed `git init` in, which should be `notes `
 
