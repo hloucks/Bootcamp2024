@@ -14,9 +14,6 @@ In the upper right corner there is a small box with ">_" click on that and activ
 ## 2. Create your directory 
 On the google cloud console command line, run the following commands. For the first part of this tutorial we are going to pretend that we are creating a repository for storing notes in a markdown file. This is a really great way of keeping a lab notebook that ensures everything is dated, and that it is stored remotely so if something happens to your laptop you don't lose your notes. 
 
-Here is an example of what my notes repo looks like 
-![exampleRepo](pics/example_repo.png)
-
 Now make a directory and a notes file.
 ```
 mkdir notes
@@ -62,8 +59,6 @@ Set the repository name to be the same as the name of the directory you executed
 
 I also recomend setting this to private as you likely want your research notes to not be published publically.  
 Click "Create Repository" 
-
-![new_repo](pics/new_repo.png)
 
 Now copy the HTTPS link for the repo you've just created and sub it in for the URL in the command below 
 
